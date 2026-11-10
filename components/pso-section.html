@@ -1,0 +1,90 @@
+<!-- PSO Section -->
+<section id="psoCard" class="mb-4" style="display: none">
+  <div class="card algo-card pso">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="bi bi-stars me-2"></i>
+        5) Particle Swarm Optimization (PSO)
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Swarm Size:</label>
+          <input
+            type="number"
+            id="psoPop"
+            class="form-control"
+            value="30"
+            min="10"
+            max="200"
+          />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Iterations:</label>
+          <input
+            type="number"
+            id="psoIter"
+            class="form-control"
+            value="100"
+            min="10"
+            max="1000"
+          />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Inertia (w):</label>
+          <input
+            type="number"
+            id="psoW"
+            class="form-control"
+            value="0.5"
+            step="0.1"
+            min="0"
+            max="2"
+          />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Personal (c1):</label>
+          <input
+            type="number"
+            id="psoC1"
+            class="form-control"
+            value="1.5"
+            step="0.1"
+            min="0"
+            max="3"
+          />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Global (c2):</label>
+          <input
+            type="number"
+            id="psoC2"
+            class="form-control"
+            value="1.5"
+            step="0.1"
+            min="0"
+            max="3"
+          />
+        </div>
+      </div>
+      <div class="mt-3">
+        <button id="runPSOBtn" class="btn btn-primary">
+          <i class="bi bi-play-fill me-2"></i>
+          Run PSO
+        </button>
+      </div>
+      <div id="psoResultBox" class="mt-4"></div>
+      <div class="mt-3">
+        <button id="psoExportCSV" class="btn btn-success">
+          <i class="bi bi-file-earmark-csv me-2"></i>
+          Export PSO Schedule (CSV)
+        </button>
+      </div>
+      <h6 class="mt-4 mb-3">Best PSO Schedule:</h6>
+      <div class="table-responsive">
+        <table id="psoScheduleTable" class="table table-hover"></table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+<!-- General Settings -->
+<section class="mb-4">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="bi bi-gear me-2"></i>
+        General Settings (All Algorithms)
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label"
+            >Seed (for reproducible results):</label
+          >
+          <input
+            type="number"
+            id="seedInput"
+            class="form-control"
+            value="1"
+            min="1"
+          />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"
+            >Early Stopping: Stop if no improvement for</label
+          >
+          <div class="input-group">
+            <input
+              type="number"
+              id="patienceInput"
+              class="form-control"
+              value="30"
+              min="1"
+              max="1000"
+            />
+            <span class="input-group-text">iterations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
