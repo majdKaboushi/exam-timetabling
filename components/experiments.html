@@ -9,8 +9,8 @@
     </div>
     <div class="card-body">
       <p class="text-muted">
-        Run all three algorithms 10 times to calculate average, best,
-        worst, and standard deviation.
+        Run all three algorithms to calculate average, best, worst, and standard deviation.
+        <strong>Warning:</strong> Large datasets may take several minutes. Consider reducing runs for faster results.
       </p>
       <div class="row g-3 align-items-end">
         <div class="col-md-4">
@@ -19,15 +19,22 @@
             type="number"
             id="expRuns"
             class="form-control"
-            value="10"
+            value="5"
             min="1"
             max="50"
           />
+          <small class="text-muted">Default: 5 (faster for large datasets)</small>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
           <button id="runExpBtn" class="btn btn-success">
             <i class="bi bi-play-circle me-2"></i>
             Start Comprehensive Experiment
+          </button>
+        </div>
+        <div class="col-md-4">
+          <button id="cancelExpBtn" class="btn btn-danger" style="display: none;">
+            <i class="bi bi-x-circle me-2"></i>
+            Cancel Experiment
           </button>
         </div>
       </div>
@@ -37,7 +44,11 @@
           <div class="spinner-border text-primary me-3" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <span class="text-primary">Running comprehensive experiment... This may take a while for large datasets.</span>
+          <div>
+            <span class="text-primary fw-bold">Running comprehensive experiment...</span>
+            <br>
+            <small class="text-muted">For large datasets, this may take several minutes. Please be patient.</small>
+          </div>
         </div>
       </div>
 

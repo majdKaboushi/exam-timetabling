@@ -188,6 +188,7 @@ class ExamTimetablingApp {
       this.ui.showElement("psoCard", "fade-in");
       this.ui.showElement("acoCard", "fade-in");
       this.ui.showElement("expCard", "fade-in");
+      this.ui.showElement("chartCard", "fade-in");
 
       // Initialize algorithm runner
       this.algorithmRunner = new AlgorithmRunner(

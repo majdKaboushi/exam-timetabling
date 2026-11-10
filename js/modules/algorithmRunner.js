@@ -60,6 +60,7 @@ class AlgorithmRunner {
       this.results.GA.bestSchedule,
       this.dataset.timeslots
     );
+    this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "GA", "Generation");
   }
 
@@ -98,6 +99,7 @@ class AlgorithmRunner {
       this.results.PSO.bestSchedule,
       this.dataset.timeslots
     );
+    this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "PSO", "Iteration");
   }
 
@@ -136,6 +138,7 @@ class AlgorithmRunner {
       this.results.ACO.bestSchedule,
       this.dataset.timeslots
     );
+    this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "ACO", "Iteration");
   }
 
