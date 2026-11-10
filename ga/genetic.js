@@ -35,7 +35,7 @@ function crossover(p1, p2, dataset) {
   return child;
 }
 
-function runGA(dataset, params, onGeneration) {
+async function runGA(dataset, params, onGeneration) {
   if (params.seed !== undefined) Feasible.setSeed(params.seed);
   const popSize = params.populationSize || 30;
   const generations = params.generations || 100;
@@ -46,10 +46,17 @@ function runGA(dataset, params, onGeneration) {
   const elitism = params.elitism !== undefined ? params.elitism : 2;
   const patience = params.patience || Infinity;
 
+  // Helper function to yield control to UI
+  const yieldToUI = async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  };
+
   const population = [];
   for (let i = 0; i < popSize; i++) {
     const ind = randomFeasibleIndividual(dataset);
     if (ind) population.push(ind);
+    // Yield periodically during population generation
+    if (i % 5 === 0) await yieldToUI();
   }
   if (population.length === 0)
     throw new Error("Failed to generate any valid individual — check the data");
@@ -97,6 +104,9 @@ function runGA(dataset, params, onGeneration) {
     history.push({ generation: g, best: best.ev.fitness, avg });
     if (onGeneration) onGeneration(g, best.ev.fitness, avg);
     if (noImprove >= patience) break;
+
+    // Yield control to UI every generation
+    await yieldToUI();
   }
 
   return {

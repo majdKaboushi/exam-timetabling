@@ -29,6 +29,7 @@ class ExamTimetablingApp {
 
   initialize() {
     this.initializeFileInputs();
+    this.setupUploadModeToggle();
     this.setupEventListeners();
   }
 
@@ -45,6 +46,40 @@ class ExamTimetablingApp {
       `;
       indBox.appendChild(div);
     });
+  }
+
+  setupUploadModeToggle() {
+    const bulkModeRadio = document.getElementById("bulkMode");
+    const individualModeRadio = document.getElementById("individualMode");
+    const bulkSection = document.getElementById("bulkUploadSection");
+    const individualSection = document.getElementById("individualUploadSection");
+
+    if (!bulkModeRadio || !individualModeRadio || !bulkSection || !individualSection) return;
+
+    bulkModeRadio.addEventListener("change", () => {
+      if (bulkModeRadio.checked) {
+        bulkSection.style.display = "block";
+        individualSection.style.display = "none";
+      }
+    });
+
+    individualModeRadio.addEventListener("change", () => {
+      if (individualModeRadio.checked) {
+        bulkSection.style.display = "none";
+        individualSection.style.display = "block";
+      }
+    });
+
+    // Add file count display for bulk upload
+    const bulkInput = document.getElementById("bulkInput");
+    if (bulkInput) {
+      bulkInput.addEventListener("change", () => {
+        const fileCount = bulkInput.files.length;
+        if (fileCount > 0) {
+          this.logger.log(`${fileCount} file(s) selected for bulk upload`);
+        }
+      });
+    }
   }
 
   setupEventListeners() {
@@ -145,11 +180,23 @@ class ExamTimetablingApp {
   async handleLoadData() {
     try {
       this.logger.log("— Starting Load —");
+      const loadBtn = document.getElementById("loadBtn");
+
+      // Disable button and show loading state
+      if (loadBtn) {
+        loadBtn.disabled = true;
+        loadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+      }
+
       const filesMap = await this.fileManager.collectFiles();
       const missing = this.fileManager.validateFiles(filesMap);
 
       if (missing) {
-        alert("Missing files: " + missing.join(", "));
+        alert("Missing files: " + missing.join(", ") + "\n\nPlease make sure all 6 required files are uploaded.");
+        if (loadBtn) {
+          loadBtn.disabled = false;
+          loadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Load Data';
+        }
         return;
       }
 
@@ -197,34 +244,48 @@ class ExamTimetablingApp {
         this.ui,
         this.chartManager
       );
+
+      // Re-enable button
+      if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Data Loaded Successfully';
+        setTimeout(() => {
+          loadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Load Data';
+        }, 3000);
+      }
     } catch (error) {
       this.logger.error(error.message);
-      alert("Error: " + error.message);
+      alert("Error loading data: " + error.message + "\n\nPlease check your CSV files and try again.");
+      const loadBtn = document.getElementById("loadBtn");
+      if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Load Data';
+      }
     }
   }
 
-  handleRunGA() {
+  async handleRunGA() {
     if (!this.algorithmRunner) {
       alert("Please load data first");
       return;
     }
-    this.algorithmRunner.runGA();
+    await this.algorithmRunner.runGA();
   }
 
-  handleRunPSO() {
+  async handleRunPSO() {
     if (!this.algorithmRunner) {
       alert("Please load data first");
       return;
     }
-    this.algorithmRunner.runPSO();
+    await this.algorithmRunner.runPSO();
   }
 
-  handleRunACO() {
+  async handleRunACO() {
     if (!this.algorithmRunner) {
       alert("Please load data first");
       return;
     }
-    this.algorithmRunner.runACO();
+    await this.algorithmRunner.runACO();
   }
 
   async handleRunExperiments() {
@@ -236,7 +297,20 @@ class ExamTimetablingApp {
     const expRunsInput = this.ui.getElement("expRuns");
     const runs = expRunsInput ? +expRunsInput.value : 10;
 
+    // Disable button and show loading state
+    const runBtn = this.ui.getElement("runExpBtn");
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running Experiments...';
+    }
+
     this.experimentResults = await this.algorithmRunner.runExperiments(runs);
+
+    // Re-enable button
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.innerHTML = '<i class="bi bi-play-circle me-2"></i>Run Experiments';
+    }
   }
 }
 
@@ -248,7 +322,7 @@ let app;
 
 document.addEventListener("DOMContentLoaded", () => {
   // Wait for components to load before initializing the app
-  setTimeout(() => {
+  window.addEventListener('componentsLoaded', () => {
     app = new ExamTimetablingApp();
-  }, 500);
+  });
 });

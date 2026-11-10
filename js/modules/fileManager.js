@@ -33,6 +33,10 @@ class FileManager {
     return missing.length === 0 ? null : missing;
   }
 
+  getRequiredFilesList() {
+    return this.requiredFiles.join(", ");
+  }
+
   downloadFile(filename, content, type = "text/csv") {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);

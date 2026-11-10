@@ -3,7 +3,7 @@
 // eta = 1 / (1 + deltaA), deltaA = students of this course with another exam
 // on the same day. Room = smallest free room that fits (best-fit).
 
-function runACO(dataset, params, onIteration) {
+async function runACO(dataset, params, onIteration) {
   if (params.seed !== undefined) Feasible.setSeed(params.seed);
   const numAnts = params.populationSize || 30;
   const iterations = params.iterations || 100;
@@ -15,6 +15,11 @@ function runACO(dataset, params, onIteration) {
   const tauMin = 0.01,
     tauMax = 10;
   const patience = params.patience || Infinity;
+
+  // Helper function to yield control to UI
+  const yieldToUI = async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  };
 
   const P = Feasible.prep(dataset);
   const slotIdx = {};
@@ -74,6 +79,8 @@ function runACO(dataset, params, onIteration) {
       const schedule = GA.individualToSchedule(Feasible.stateToInd(st));
       const ev = Constraints.evaluateSchedule(schedule, dataset);
       if (Constraints.isFeasible(ev)) ants.push({ schedule, ev });
+      // Yield periodically during ant construction
+      if (a % 5 === 0) await yieldToUI();
     }
 
     let improved = false;
@@ -109,6 +116,9 @@ function runACO(dataset, params, onIteration) {
     history.push({ iter, best: gbestEv.fitness, avg });
     if (onIteration) onIteration(iter, gbestEv.fitness, avg);
     if (gbest && noImprove >= patience) break;
+
+    // Yield control to UI every iteration
+    await yieldToUI();
   }
 
   if (!gbest) throw new Error("All ants failed to build a valid schedule");

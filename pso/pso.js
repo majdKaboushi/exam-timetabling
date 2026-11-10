@@ -1,7 +1,7 @@
 // Position = schedule. "Velocity" = probabilities: keep current (w),
 // copy from pbest (c1), or copy from gbest (c2).
 
-function runPSO(dataset, params, onIteration) {
+async function runPSO(dataset, params, onIteration) {
   if (params.seed !== undefined) Feasible.setSeed(params.seed);
   const numParticles = params.populationSize || 30;
   const iterations = params.iterations || 100;
@@ -10,6 +10,11 @@ function runPSO(dataset, params, onIteration) {
   const c2 = params.c2 !== undefined ? params.c2 : 1.5;
   const turbulence = params.turbulence !== undefined ? params.turbulence : 0.05;
   const patience = params.patience || Infinity;
+
+  // Helper function to yield control to UI
+  const yieldToUI = async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  };
 
   const evaluate = (ind) =>
     Constraints.evaluateSchedule(GA.individualToSchedule(ind), dataset);
@@ -21,6 +26,8 @@ function runPSO(dataset, params, onIteration) {
     const ev = evaluate(ind);
     if (Constraints.isFeasible(ev))
       particles.push({ pos: ind, pbest: ind, pbestEv: ev });
+    // Yield periodically during particle generation
+    if (i % 5 === 0) await yieldToUI();
   }
   if (particles.length === 0) throw new Error("Failed to generate valid particles");
 
@@ -76,6 +83,9 @@ function runPSO(dataset, params, onIteration) {
     history.push({ iter, best: gbestEv.fitness, avg });
     if (onIteration) onIteration(iter, gbestEv.fitness, avg);
     if (noImprove >= patience) break;
+
+    // Yield control to UI every iteration
+    await yieldToUI();
   }
 
   return {

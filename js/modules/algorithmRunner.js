@@ -26,7 +26,7 @@ class AlgorithmRunner {
     };
   }
 
-  runGA() {
+  async runGA() {
     const params = {
       populationSize: +this.ui.getElement("gaPop").value,
       generations: +this.ui.getElement("gaGen").value,
@@ -35,11 +35,18 @@ class AlgorithmRunner {
       ...this.getCommonParams(),
     };
 
+    // Disable button and show loading state
+    const runBtn = this.ui.getElement("runGABtn");
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running GA...';
+    }
+
     this.logger.log("— Running GA —");
     const t0 = performance.now();
     const history = [];
 
-    this.results.GA = GA.runGA(this.dataset, params, (gen, best, avg) => {
+    this.results.GA = await GA.runGA(this.dataset, params, (gen, best, avg) => {
       history.push({ gen, best, avg });
       if (gen % 10 === 0 || gen === params.generations) {
         this.logger.log(`Generation ${gen}: best=${best}`);
@@ -62,9 +69,15 @@ class AlgorithmRunner {
     );
     this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "GA", "Generation");
+
+    // Re-enable button
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.innerHTML = '<i class="bi bi-play-circle me-2"></i>Run GA';
+    }
   }
 
-  runPSO() {
+  async runPSO() {
     const params = {
       populationSize: +this.ui.getElement("psoPop").value,
       iterations: +this.ui.getElement("psoIter").value,
@@ -74,11 +87,18 @@ class AlgorithmRunner {
       ...this.getCommonParams(),
     };
 
+    // Disable button and show loading state
+    const runBtn = this.ui.getElement("runPSOBtn");
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running PSO...';
+    }
+
     this.logger.log("— Running PSO —");
     const t0 = performance.now();
     const history = [];
 
-    this.results.PSO = PSO.runPSO(this.dataset, params, (iter, best, avg) => {
+    this.results.PSO = await PSO.runPSO(this.dataset, params, (iter, best, avg) => {
       history.push({ gen: iter, best, avg });
       if (iter % 10 === 0 || iter === params.iterations) {
         this.logger.log(`Iteration ${iter}: best=${best}`);
@@ -101,9 +121,15 @@ class AlgorithmRunner {
     );
     this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "PSO", "Iteration");
+
+    // Re-enable button
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.innerHTML = '<i class="bi bi-play-circle me-2"></i>Run PSO';
+    }
   }
 
-  runACO() {
+  async runACO() {
     const params = {
       populationSize: +this.ui.getElement("acoAnts").value,
       iterations: +this.ui.getElement("acoIter").value,
@@ -113,11 +139,18 @@ class AlgorithmRunner {
       ...this.getCommonParams(),
     };
 
+    // Disable button and show loading state
+    const runBtn = this.ui.getElement("runACOBtn");
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Running ACO...';
+    }
+
     this.logger.log("— Running ACO —");
     const t0 = performance.now();
     const history = [];
 
-    this.results.ACO = ACO.runACO(this.dataset, params, (iter, best, avg) => {
+    this.results.ACO = await ACO.runACO(this.dataset, params, (iter, best, avg) => {
       history.push({ gen: iter, best, avg });
       if (iter % 10 === 0 || iter === params.iterations) {
         this.logger.log(`Iteration ${iter}: best=${best}`);
@@ -140,6 +173,12 @@ class AlgorithmRunner {
     );
     this.ui.showElement("chartCard", "fade-in");
     this.chart.drawChart(history, "ACO", "Iteration");
+
+    // Re-enable button
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.innerHTML = '<i class="bi bi-play-circle me-2"></i>Run ACO';
+    }
   }
 
   async runExperiments(runs) {
@@ -172,8 +211,8 @@ class AlgorithmRunner {
     const expProgress = this.ui.getElement("expProgress");
     const expLoadingIndicator = this.ui.getElement("expLoadingIndicator");
 
-    // Disable button and show loading indicators
-    this.ui.disableButton("runExpBtn", true);
+    // Button is now disabled in app.js
+    // this.ui.disableButton("runExpBtn", true);
 
     if (expProgress) {
       expProgress.style.display = "block";
@@ -201,7 +240,8 @@ class AlgorithmRunner {
       }
     );
 
-    this.ui.disableButton("runExpBtn", false);
+    // Don't re-enable button here - it's handled in app.js
+    // this.ui.disableButton("runExpBtn", false);
 
     if (expProgress) {
       expProgress.textContent = "Experiment completed successfully!";
