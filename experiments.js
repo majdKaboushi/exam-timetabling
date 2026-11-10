@@ -1,5 +1,3 @@
-// experiments.js — run each algorithm N times and compute stats
-
 async function runExperiments(dataset, params, runs, onProgress) {
   const results = { GA: [], PSO: [], ACO: [] };
 
@@ -9,55 +7,41 @@ async function runExperiments(dataset, params, runs, onProgress) {
   for (let i = 0; i < runs; i++) {
     const seed = base + i;
 
-    // Run GA asynchronously to allow UI updates
-    const gaResult = await new Promise((resolve) => {
-      setTimeout(() => {
-        const t0 = performance.now();
-        const gaRes = GA.runGA(dataset, { ...params.GA, seed });
-        const t1 = performance.now();
-        resolve({
-          fitness: gaRes.bestEvaluation.fitness,
-          A: gaRes.bestEvaluation.A,
-          time: t1 - t0,
-        });
-      }, 0);
-    });
+    // GA, PSO and ACO are async, so each run must be awaited
+    const t0GA = performance.now();
+    const gaRes = await GA.runGA(dataset, { ...params.GA, seed });
+    const t1GA = performance.now();
+    const gaResult = {
+      fitness: gaRes.bestEvaluation.fitness,
+      A: gaRes.bestEvaluation.A,
+      time: t1GA - t0GA,
+    };
     results.GA.push(gaResult);
 
     // Small delay to allow UI update
     await new Promise((r) => setTimeout(r, 10));
 
-    // Run PSO asynchronously
-    const psoResult = await new Promise((resolve) => {
-      setTimeout(() => {
-        const t0 = performance.now();
-        const psoRes = PSO.runPSO(dataset, { ...params.PSO, seed });
-        const t1 = performance.now();
-        resolve({
-          fitness: psoRes.bestEvaluation.fitness,
-          A: psoRes.bestEvaluation.A,
-          time: t1 - t0,
-        });
-      }, 0);
-    });
+    const t0PSO = performance.now();
+    const psoRes = await PSO.runPSO(dataset, { ...params.PSO, seed });
+    const t1PSO = performance.now();
+    const psoResult = {
+      fitness: psoRes.bestEvaluation.fitness,
+      A: psoRes.bestEvaluation.A,
+      time: t1PSO - t0PSO,
+    };
     results.PSO.push(psoResult);
 
     // Small delay to allow UI update
     await new Promise((r) => setTimeout(r, 10));
 
-    // Run ACO asynchronously
-    const acoResult = await new Promise((resolve) => {
-      setTimeout(() => {
-        const t0 = performance.now();
-        const acoRes = ACO.runACO(dataset, { ...params.ACO, seed });
-        const t1 = performance.now();
-        resolve({
-          fitness: acoRes.bestEvaluation.fitness,
-          A: acoRes.bestEvaluation.A,
-          time: t1 - t0,
-        });
-      }, 0);
-    });
+    const t0ACO = performance.now();
+    const acoRes = await ACO.runACO(dataset, { ...params.ACO, seed });
+    const t1ACO = performance.now();
+    const acoResult = {
+      fitness: acoRes.bestEvaluation.fitness,
+      A: acoRes.bestEvaluation.A,
+      time: t1ACO - t0ACO,
+    };
     results.ACO.push(acoResult);
 
     if (onProgress) {
